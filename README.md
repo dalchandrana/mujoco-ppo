@@ -2,7 +2,7 @@
 
 **From-scratch Proximal Policy Optimization (PPO) for continuous control** — training a simulated quadruped to run in MuJoCo.
 
-This is the second project in **Phase 2, Lane B (Optimus)** of my reinforcement learning roadmap. It builds directly on [CartPole-REINFORCE](https://github.com/USERNAME/cartpole-reinforce), upgrading from a discrete toy problem to continuous-action locomotion with the same algorithm family used in real legged-robotics research and RLHF fine-tuning of LLMs.
+This is the second project in **Phase 2, Lane B (Optimus)** of my reinforcement learning roadmap. It builds directly on [CartPole-REINFORCE](https://github.com/dalchandrana/cartpole-reinforce), upgrading from a discrete toy problem to continuous-action locomotion with the same algorithm family used in real legged-robotics research and RLHF fine-tuning of LLMs.
 
 **What's new compared to CartPole:**
 - **Continuous action space** — 6 real-valued joint torques parameterized by independent Gaussian distributions with a state-independent learnable standard deviation (`log_std`).
@@ -46,7 +46,7 @@ With these constraints, the agent learns a beautiful, stable, multi-legged runni
 
 ## Why PPO? The Fix for CartPole's Collapse
 
-In my [CartPole experiments](https://github.com/USERNAME/cartpole-reinforce), I observed that vanilla REINFORCE with a high learning rate caused **catastrophic, permanent policy collapse** — the loss hit exactly 0.0000 and never recovered. The policy made a single massive update that pushed it into a deterministic, degenerate state.
+In my [CartPole experiments](https://github.com/dalchandrana/cartpole-reinforce), I observed that vanilla REINFORCE with a high learning rate caused **catastrophic, permanent policy collapse** — the loss hit exactly 0.0000 and never recovered. The policy made a single massive update that pushed it into a deterministic, degenerate state.
 
 PPO's central innovation directly prevents this. It computes a **probability ratio** measuring how much the policy has changed since the data was collected:
 
@@ -70,7 +70,7 @@ This single change — clip, then take the minimum — is the entire algorithmic
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/USERNAME/halfcheetah-ppo.git
+git clone https://github.com/dalchandrana/halfcheetah-ppo.git
 cd halfcheetah-ppo
 pip install -r requirements.txt
 ```
