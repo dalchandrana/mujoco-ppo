@@ -12,7 +12,7 @@ This is the second project in **Phase 2, Lane B (Optimus)** of my reinforcement 
 - **Orthogonal Weight Initialization** — implements the standard continuous-control PPO trick to prevent early vanishing/exploding gradients.
 - **Multi-epoch batch reuse** — the same data trains for 10 epochs per batch, enabled by clipping's stability guarantee.
 
-![HalfCheetah Natural Gait](halfcheetah_ppo_v3.mp4)
+![HalfCheetah Natural Gait](assets/halfcheetah_v3.mp4)
 
 ---
 
@@ -27,10 +27,10 @@ The default HalfCheetah reward exploits the physics engine (running upside down 
 With these constraints, the agent learns a beautiful, stable, multi-legged running gait that closely resembles an actual animal, achieving a shaped return of ~4,110.
 
 ### Training Reward Curve (Natural Gait)
-![Reward Curve](natural_gait_v3_reward_curve.png)
+![Reward Curve](assets/reward_curve.png)
 
 ### KL Divergence Over Training
-![KL Divergence](natural_gait_v3_kl_divergence.png)
+![KL Divergence](assets/kl_divergence.png)
 
 ### Experiment Comparison
 
