@@ -46,7 +46,7 @@ With these constraints, the agent learns a beautiful, stable, multi-legged runni
 
 ## Why PPO? The Fix for CartPole's Collapse
 
-In my [CartPole experiments](https://github.com/USERNAME/cartpole-reinforce), I observed that vanilla REINFORCE with a high learning rate caused **catastrophic, permanent policy collapse** — the loss hit exactly 0.0000 and never recovered. The policy made a single massive update that pushed it into a deterministic, degenerate state.
+In my [CartPole experiments](https://github.com/dalchandrana/cartpole-reinforce), I observed that vanilla REINFORCE with a high learning rate caused **catastrophic, permanent policy collapse** — the loss hit exactly 0.0000 and never recovered. The policy made a single massive update that pushed it into a deterministic, degenerate state.
 
 PPO's central innovation directly prevents this. It computes a **probability ratio** measuring how much the policy has changed since the data was collected:
 
@@ -70,7 +70,7 @@ This single change — clip, then take the minimum — is the entire algorithmic
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/USERNAME/halfcheetah-ppo.git
+git clone https://github.com/dalchandrana/halfcheetah-ppo.git
 cd halfcheetah-ppo
 pip install -r requirements.txt
 ```
