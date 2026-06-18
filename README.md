@@ -2,7 +2,7 @@
 
 **From-scratch Proximal Policy Optimization (PPO) for continuous control** — training a simulated quadruped to run in MuJoCo.
 
-This is the second project in **Phase 2, Lane B (Optimus)** of my reinforcement learning roadmap. It builds directly on [CartPole-REINFORCE](https://github.com/USERNAME/cartpole-reinforce), upgrading from a discrete toy problem to continuous-action locomotion with the same algorithm family used in real legged-robotics research and RLHF fine-tuning of LLMs.
+This is the second project in **Phase 2, Lane B (Optimus)** of my reinforcement learning roadmap. It builds directly on [CartPole-REINFORCE](https://github.com/dalchandrana/cartpole-reinforce), upgrading from a discrete toy problem to continuous-action locomotion with the same algorithm family used in real legged-robotics research and RLHF fine-tuning of LLMs.
 
 **What's new compared to CartPole:**
 - **Continuous action space** — 6 real-valued joint torques parameterized by independent Gaussian distributions with a state-independent learnable standard deviation (`log_std`).
