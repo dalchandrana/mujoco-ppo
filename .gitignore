@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Project outputs
+# Keep reward curves and evaluation logs (embedded in README)
+# Ignore raw data, model weights, and training configs
+experiments/*.csv
+experiments/*.log
+checkpoints/*.pt
+checkpoints/*.json
+checkpoints/*.npz
+
+# Media outputs (large video files — keep GIFs for README)
+media/*.mp4
+media_*/*.mp4
