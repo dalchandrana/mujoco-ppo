@@ -1,4 +1,4 @@
-# HalfCheetah-PPO
+# MuJoCo-PPO
 
 **From-scratch Proximal Policy Optimization (PPO) for continuous control** — training a simulated quadruped to run in MuJoCo.
 
@@ -79,8 +79,8 @@ This single change — clip, then take the minimum — is the entire algorithmic
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/dalchandrana/halfcheetah-ppo.git
-cd halfcheetah-ppo
+git clone https://github.com/dalchandrana/mujoco-ppo.git
+cd mujoco-ppo
 pip install -r requirements.txt
 ```
 
@@ -116,7 +116,7 @@ python evaluate.py --env-id Hopper-v5 --checkpoint checkpoints/actor_hopper_base
 ## Project Structure
 
 ```
-halfcheetah-ppo/
+mujoco-ppo/
 ├── networks.py        # ActorNetwork, CriticNetwork (Tanh, 256-unit hidden layers)
 ├── buffer.py          # RolloutBuffer — storage + GAE computation
 ├── train.py           # Main PPO training loop with CLI experiment support
