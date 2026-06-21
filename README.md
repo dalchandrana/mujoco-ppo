@@ -18,7 +18,15 @@ This is the second project in **Phase 2, Lane B (Optimus)** of my reinforcement 
 
 ## Results
 
-### Natural Gait Training (Reward Shaping)
+### Environment Generalization (Hopper-v5)
+The codebase has been refactored to dynamically extract observation and action dimensions directly from the Gym environment. This means the identical mathematical implementation used for HalfCheetah successfully solved the Hopper-v5 environment without any algorithmic changes or hyperparameter tuning.
+
+<video src="media/hopper_v5_ppo-episode-0.mp4" controls="controls" muted="muted" playsinline="playsinline" style="max-width:100%;"></video>
+
+**Hopper-v5 Training Reward Curve:**
+![Hopper Reward Curve](experiments/hopper_baseline_reward_curve.png)
+
+### Natural Gait Training (HalfCheetah-v5)
 The default HalfCheetah reward exploits the physics engine (running upside down or bouncing on the head). I implemented a custom `NaturalGaitWrapper` with biologically-motivated shaping terms:
 1. **Pitch Penalty** (`pitch²`): prevents flipping and head-dragging (heavily weighted).
 2. **Height Bonus**: rewards keeping the torso near the natural resting height of `0.5m`.
@@ -39,6 +47,7 @@ With these constraints, the agent learns a beautiful, stable, multi-legged runni
 | v4 Baseline | Legacy v4 Default PPO | **3,711.7** | Exploited the physics engine. |
 | v5 Baseline | Default PPO on `HalfCheetah-v5` | **4,968.5** | High scores, but bizarre "scooting" locomotion. |
 | **Natural Gait v3** | **Reward Shaping** | **4,110.4** | **Target met. Agent runs beautifully upright.** |
+| **Hopper Generalization** | `--env-id Hopper-v5` | **3,383.5** | **Zero-shot algorithm transfer to a different morphology.** |
 | No clipping (v4) | ε→very large (effectively removes PPO clip) | **-1148.2** | Catastrophic policy collapse; KL div shot >30.0 |
 | Higher LR (v4) | lr=3e-3 instead of 3e-4 (10× increase) | **-115.7** | Plateaued but *did not permanently collapse* thanks to clipping |
 
@@ -75,10 +84,14 @@ cd halfcheetah-ppo
 pip install -r requirements.txt
 ```
 
-### 2. Train the natural-gait agent
+### 2. Train the agents
 
 ```bash
-python train.py --reward-shaping         # ~20-45 min on M4 CPU
+# Train HalfCheetah with natural gait reward shaping
+python train.py --reward-shaping
+
+# Train Hopper-v5 (automatically disables HalfCheetah-specific shaping)
+python train.py --env-id Hopper-v5 --experiment hopper_baseline
 ```
 
 ### 3. Run ablation experiments
@@ -88,10 +101,14 @@ python train.py --experiment no_clip --clip-epsilon 1000000
 python train.py --experiment high_lr --lr 3e-3
 ```
 
-### 4. Evaluate the trained policy
+### 4. Evaluate the trained policies
 
 ```bash
+# Evaluate HalfCheetah
 python evaluate.py --checkpoint checkpoints/actor_natural_gait_v3.pt --reward-shaping --record
+
+# Evaluate Hopper
+python evaluate.py --env-id Hopper-v5 --checkpoint checkpoints/actor_hopper_baseline.pt --record
 ```
 
 ---
@@ -135,7 +152,6 @@ halfcheetah-ppo/
 
 ## What I'd Improve Next
 
-- **Hopper-v5 transfer** — the same PPO implementation on a single-legged robot that can fall over, testing early-termination handling
 - **Isaac Gym migration** — moving this same algorithm to GPU-accelerated parallel simulation for more complex robot bodies (Phase 3 of the Optimus roadmap)
 
 ---

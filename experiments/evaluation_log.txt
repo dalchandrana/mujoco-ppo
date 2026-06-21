@@ -1,29 +1,29 @@
-Checkpoint: checkpoints/actor_natural_gait_v3.pt
+Checkpoint: checkpoints/actor_hopper_baseline.pt
 Episodes: 20
-Average return: 4110.39
-Std: 63.51
-Min: 3915.8
-Max: 4200.1
+Average return: 3383.50
+Std: 2.87
+Min: 3377.3
+Max: 3387.9
 Target met (≥2500): True
 
 Per-episode returns:
-  Episode   1: 4110.1
-  Episode   2: 4141.3
-  Episode   3: 4092.8
-  Episode   4: 4108.6
-  Episode   5: 4157.6
-  Episode   6: 4107.4
-  Episode   7: 4055.9
-  Episode   8: 3915.8
-  Episode   9: 4154.0
-  Episode  10: 4200.1
-  Episode  11: 4173.7
-  Episode  12: 4146.6
-  Episode  13: 4159.7
-  Episode  14: 4140.4
-  Episode  15: 4025.7
-  Episode  16: 4143.1
-  Episode  17: 4156.3
-  Episode  18: 4108.6
-  Episode  19: 4080.1
-  Episode  20: 4030.1
+  Episode   1: 3377.8
+  Episode   2: 3384.0
+  Episode   3: 3377.3
+  Episode   4: 3384.1
+  Episode   5: 3382.6
+  Episode   6: 3385.8
+  Episode   7: 3385.6
+  Episode   8: 3382.0
+  Episode   9: 3382.4
+  Episode  10: 3385.3
+  Episode  11: 3387.9
+  Episode  12: 3383.5
+  Episode  13: 3382.6
+  Episode  14: 3386.5
+  Episode  15: 3380.0
+  Episode  16: 3385.3
+  Episode  17: 3381.7
+  Episode  18: 3386.8
+  Episode  19: 3387.2
+  Episode  20: 3381.6

@@ -87,6 +87,7 @@ def evaluate(
 
 def record_video(
     actor: ActorNetwork,
+    env_id: str = "HalfCheetah-v5",
     video_dir: str | Path = "media",
     num_episodes: int = 1,
     obs_normaliser: RunningMeanStd | None = None,
@@ -99,6 +100,7 @@ def record_video(
 
     Args:
         actor: A trained ActorNetwork in eval mode.
+        env_id: Environment ID to record.
         video_dir: Directory to save the video files.
         num_episodes: Number of episodes to record.
         obs_normaliser: Optional observation normaliser (must match training).
@@ -107,11 +109,11 @@ def record_video(
     video_path = Path(video_dir)
     video_path.mkdir(parents=True, exist_ok=True)
 
-    env = gym.make("HalfCheetah-v5", render_mode="rgb_array")
+    env = gym.make(env_id, render_mode="rgb_array")
     env = gym.wrappers.RecordVideo(
         env,
         video_folder=str(video_path),
-        name_prefix="halfcheetah_ppo",
+        name_prefix=f"{env_id.lower().replace('-', '_')}_ppo",
         episode_trigger=lambda ep_id: True,  # record all episodes
     )
 
@@ -149,8 +151,13 @@ def main(args: argparse.Namespace) -> None:
         print("   Run  python train.py  first to train the policy.")
         return
 
+    # Initialize environment first to get dimensions
+    env = gym.make(args.env_id)
+    state_dim = env.observation_space.shape[0]
+    action_dim = env.action_space.shape[0]
+
     # Load the trained actor
-    actor = ActorNetwork()
+    actor = ActorNetwork(state_dim=state_dim, action_dim=action_dim)
     actor.load_state_dict(
         torch.load(ckpt_path, map_location="cpu", weights_only=True)
     )
@@ -161,7 +168,7 @@ def main(args: argparse.Namespace) -> None:
     obs_normaliser = None
     if norm_path.exists():
         data = np.load(norm_path, allow_pickle=True)
-        obs_normaliser = RunningMeanStd(shape=(17,))
+        obs_normaliser = RunningMeanStd(shape=(state_dim,))
         obs_normaliser.load_state_dict({
             "mean": data["mean"],
             "var": data["var"],
@@ -172,9 +179,11 @@ def main(args: argparse.Namespace) -> None:
         print("ℹ️  No obs normaliser found — using raw observations")
 
     # --- Evaluate (FR-11) ---------------------------------------------------
-    env = gym.make("HalfCheetah-v5")
     if args.reward_shaping:
-        env = NaturalGaitWrapper(env)
+        if "HalfCheetah" in args.env_id:
+            env = NaturalGaitWrapper(env)
+        else:
+            print(f"⚠️  Reward shaping requested but is not supported for {args.env_id}. Disabling.")
     print(
         f"\n🔍 Evaluating over {args.episodes} episodes (deterministic) …\n"
     )
@@ -218,7 +227,7 @@ def main(args: argparse.Namespace) -> None:
     # --- Record video (FR-14) -----------------------------------------------
     if args.record:
         print("\n🎬 Recording rollout video …")
-        record_video(actor, video_dir=args.video_dir, obs_normaliser=obs_normaliser)
+        record_video(actor, env_id=args.env_id, video_dir=args.video_dir, obs_normaliser=obs_normaliser)
 
     print(
         "\n🎯 Done!  Embed the reward curve, KL plot, and video in README.md\n"
@@ -238,6 +247,10 @@ def parse_args() -> argparse.Namespace:
         "--checkpoint", type=str,
         default="checkpoints/actor_baseline.pt",
         help="Path to saved actor weights",
+    )
+    parser.add_argument(
+        "--env-id", type=str, default="HalfCheetah-v5",
+        help="Environment ID to evaluate (default: HalfCheetah-v5)",
     )
     parser.add_argument(
         "--episodes", type=int, default=20,

@@ -67,6 +67,7 @@ class PPOConfig:
     max_grad_norm: float = 0.5      # gradient clipping norm
     seed: int = 42
     experiment: str = "baseline"    # experiment name for logging
+    env_id: str = "HalfCheetah-v5"  # environment ID to train on
     obs_normalise: bool = True      # observation normalisation (stretch goal)
     lr_anneal: bool = True          # linear LR annealing to zero
     reward_shaping: bool = False    # enable natural-gait reward wrapper
@@ -369,30 +370,38 @@ def train(config: PPOConfig) -> None:
     logger.info(f"🔧 Config: {json.dumps(asdict(config), indent=2)}")
 
     # --- Environment --------------------------------------------------------
-    env = gym.make("HalfCheetah-v5")
+    env = gym.make(config.env_id)
+    
+    state_dim = env.observation_space.shape[0]
+    action_dim = env.action_space.shape[0]
 
     # --- Reward Shaping (Natural Gait) -------------------------------------
     if config.reward_shaping:
-        env = NaturalGaitWrapper(
-            env,
-            pitch_weight=config.pitch_weight,
-            height_weight=config.height_weight,
-            smoothness_weight=config.smoothness_weight,
-        )
-        logger.info(
-            f"🦎 Reward shaping: ENABLED "
-            f"(pitch={config.pitch_weight}, height={config.height_weight}, "
-            f"smooth={config.smoothness_weight})"
-        )
+        if "HalfCheetah" in config.env_id:
+            env = NaturalGaitWrapper(
+                env,
+                pitch_weight=config.pitch_weight,
+                height_weight=config.height_weight,
+                smoothness_weight=config.smoothness_weight,
+            )
+            logger.info(
+                f"🦎 Reward shaping: ENABLED "
+                f"(pitch={config.pitch_weight}, height={config.height_weight}, "
+                f"smooth={config.smoothness_weight})"
+            )
+        else:
+            logger.warning(
+                f"⚠️  Reward shaping requested but is not supported for {config.env_id}. Disabling."
+            )
 
     # --- Observation normalisation (stretch goal, PRD Section 5.2) ----------
-    obs_normaliser = RunningMeanStd(shape=(17,)) if config.obs_normalise else None
+    obs_normaliser = RunningMeanStd(shape=(state_dim,)) if config.obs_normalise else None
     if config.obs_normalise:
         logger.info("📊 Observation normalisation: ENABLED")
 
     # --- Networks + Optimisers ----------------------------------------------
-    actor = ActorNetwork()
-    critic = CriticNetwork()
+    actor = ActorNetwork(state_dim=state_dim, action_dim=action_dim)
+    critic = CriticNetwork(state_dim=state_dim)
     actor_optimizer = optim.Adam(actor.parameters(), lr=config.lr)
     critic_optimizer = optim.Adam(critic.parameters(), lr=config.lr)
 
@@ -401,8 +410,8 @@ def train(config: PPOConfig) -> None:
     gradient_sanity_check(actor, critic, env, logger)
 
     # Re-initialise after sanity check for a clean start
-    actor = ActorNetwork()
-    critic = CriticNetwork()
+    actor = ActorNetwork(state_dim=state_dim, action_dim=action_dim)
+    critic = CriticNetwork(state_dim=state_dim)
     actor_optimizer = optim.Adam(actor.parameters(), lr=config.lr)
     critic_optimizer = optim.Adam(critic.parameters(), lr=config.lr)
     torch.manual_seed(config.seed)
@@ -589,6 +598,10 @@ def parse_args() -> argparse.Namespace:
         help="Experiment name for file naming (default: baseline)",
     )
     parser.add_argument(
+        "--env-id", type=str, default="HalfCheetah-v5",
+        help="Environment ID to train on (default: HalfCheetah-v5)",
+    )
+    parser.add_argument(
         "--reward-shaping", action="store_true",
         help="Enable natural-gait reward shaping wrapper",
     )
@@ -620,6 +633,7 @@ if __name__ == "__main__":
         lr=args.lr,
         seed=args.seed,
         experiment=args.experiment,
+        env_id=args.env_id,
         reward_shaping=args.reward_shaping,
         pitch_weight=args.pitch_weight,
         height_weight=args.height_weight,

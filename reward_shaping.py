@@ -65,6 +65,7 @@ class NaturalGaitWrapper(gym.Wrapper):
         smoothness_weight: float = 0.1,
         target_height: float = 0.5,
     ) -> None:
+        assert "HalfCheetah" in env.unwrapped.spec.id, "NaturalGaitWrapper is specifically designed for HalfCheetah!"
         super().__init__(env)
         self.pitch_weight = pitch_weight
         self.height_weight = height_weight
